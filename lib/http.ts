@@ -1,11 +1,11 @@
 import * as rp from 'request-promise-native';
 
-class Webmo {
+export class Webmo {
   private base: string;
   private _stepAngle: number;
 
 constructor(host) {
-  this.base = '//' + (host || 'webmo.local')
+  this.base = 'http://' + (host || 'webmo.local')
   this.base += '/api'
   this._stepAngle = 1.8
 }
@@ -22,7 +22,7 @@ public getStatus () {
  * @returns {Promise}
  */
 public rotate (speed) {
-  return rp({ method: 'post', url: this.base + '/rotate/forever', body: {speed: speed} })
+  return rp.post(this.base + '/rotate/forever').form({speed: speed})
 }
 
 public rotateTo (position, absRange, speed) {
@@ -32,7 +32,7 @@ public rotateTo (position, absRange, speed) {
     speed: speed,
     absolute: true
   }
-  return rp({ method: 'post', url: this.base + '/rotate', body: args })
+  return rp.post(this.base + '/rotate').form(args)
 }
 
 /**
@@ -52,12 +52,12 @@ public rotateBy (degree, speed) {
     speed: speed
   }
 
-  return rp({ method: 'post', url: this.base + '/rotate', body: args })
+  return rp.post(this.base + '/rotate').form(args)
 }
 
 // XXX: Later
 public rotateToHome () {
-  return rp({ method: 'post', url: this.base + '/rotate/home', body: {} })
+  return rp.post(this.base + '/rotate/home').form({})
 }
 
 /**
@@ -70,7 +70,7 @@ public rotateToHome () {
 public stop (smooth, lock) {
   smooth = smooth || false
   lock = lock || false
-  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: smooth, lock: lock} })
+  return rp.post(this.base + '/stop').form({smooth: smooth, lock: lock})
 }
 
 /**
@@ -80,7 +80,7 @@ public stop (smooth, lock) {
  * @returns {Promise}
  */
 public stopHard () {
-  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: false} })
+  return rp.post(this.base + '/stop').form({smooth: false})
 }
 
 /**
@@ -90,12 +90,12 @@ public stopHard () {
  * @returns {Promise}
  */
 public stopSoft () {
-  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: true} })
+  return rp.post(this.base + '/stop').form({smooth: true})
 }
 
 // XXX: Later
 public resetHome () {
-  return rp({ method: 'post', url: this.base + '/home/reset', body: {} })
+  return rp.post(this.base + '/home/reset').form({})
 }
 
 /**
@@ -129,5 +129,3 @@ public getSpeedPerSecondByAngle (angle) {
   return this.getSpeedPerSecondByStep(this.angleToStep(angle))
 }
 }
-
-export default Webmo;

@@ -1,9 +1,8 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const rp = require("request-promise-native");
 class Webmo {
     constructor(host) {
-        this.base = '//' + (host || 'webmo.local');
+        this.base = 'http://' + (host || 'webmo.local');
         this.base += '/api';
         this._stepAngle = 1.8;
     }
@@ -18,7 +17,7 @@ class Webmo {
      * @returns {Promise}
      */
     rotate(speed) {
-        return rp({ method: 'post', url: this.base + '/rotate/forever', body: { speed: speed } });
+        return rp.post(this.base + '/rotate/forever').form({ speed: speed });
     }
     rotateTo(position, absRange, speed) {
         var args = {
@@ -27,7 +26,7 @@ class Webmo {
             speed: speed,
             absolute: true
         };
-        return rp({ method: 'post', url: this.base + '/rotate', body: args });
+        return rp.post(this.base + '/rotate').form(args);
     }
     /**
      * Webmoを任意の角度回転させる．正確に回転することができるが，外部による誤差は検出できないので注意．
@@ -45,11 +44,11 @@ class Webmo {
             degree: degree,
             speed: speed
         };
-        return rp({ method: 'post', url: this.base + '/rotate', body: args });
+        return rp.post(this.base + '/rotate').form(args);
     }
     // XXX: Later
     rotateToHome() {
-        return rp({ method: 'post', url: this.base + '/rotate/home', body: {} });
+        return rp.post(this.base + '/rotate/home').form({});
     }
     /**
      * Webmoを停止させる．
@@ -61,7 +60,7 @@ class Webmo {
     stop(smooth, lock) {
         smooth = smooth || false;
         lock = lock || false;
-        return rp({ method: 'post', url: this.base + '/stop', body: { smooth: smooth, lock: lock } });
+        return rp.post(this.base + '/stop').form({ smooth: smooth, lock: lock });
     }
     /**
      * Webmoを急停止させる．
@@ -70,7 +69,7 @@ class Webmo {
      * @returns {Promise}
      */
     stopHard() {
-        return rp({ method: 'post', url: this.base + '/stop', body: { smooth: false } });
+        return rp.post(this.base + '/stop').form({ smooth: false });
     }
     /**
      * Webmoをなめらかに停止させる．
@@ -79,11 +78,11 @@ class Webmo {
      * @returns {Promise}
      */
     stopSoft() {
-        return rp({ method: 'post', url: this.base + '/stop', body: { smooth: true } });
+        return rp.post(this.base + '/stop').form({ smooth: true });
     }
     // XXX: Later
     resetHome() {
-        return rp({ method: 'post', url: this.base + '/home/reset', body: {} });
+        return rp.post(this.base + '/home/reset').form({});
     }
     /**
      * 度をステップ(ステッピングモーターが本来回転できる単位)に変換する
@@ -112,5 +111,5 @@ class Webmo {
         return this.getSpeedPerSecondByStep(this.angleToStep(angle));
     }
 }
-exports.default = Webmo;
+exports.Webmo = Webmo;
 //# sourceMappingURL=http.js.map

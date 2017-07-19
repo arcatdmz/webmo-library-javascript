@@ -4,7 +4,7 @@ import websocket = require('websocket');
 
 const WebSocket = websocket.w3cwebsocket;
 
-class Webmo {
+export class Webmo {
   private host: string;
   private stepDegree: number;
   private onmessage: Function;
@@ -40,8 +40,6 @@ constructor(host) {
     if (typeof (this.onclose) === 'function') {
       this.onclose()
     }
-
-    console.log('closed', e)
   }.bind(this)
 
   this._ws.onerror = function (e) {
@@ -50,6 +48,10 @@ constructor(host) {
     }
     console.log('error!', e)
   }.bind(this)
+}
+
+public close () {
+  this._ws.close();
 }
 
 public getStatus () {
@@ -171,5 +173,3 @@ public getSpeedPerSecondByDegree (degree) {
   return this.getSpeedPerSecondByStep(this.degreeToStep(degree))
 }
 }
-
-export default Webmo;

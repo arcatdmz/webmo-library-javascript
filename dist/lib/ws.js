@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const websocket = require("websocket");
 // Promise is implemented in Node.js starting from v0.12.x
@@ -29,7 +28,6 @@ class Webmo {
             if (typeof (this.onclose) === 'function') {
                 this.onclose();
             }
-            console.log('closed', e);
         }.bind(this);
         this._ws.onerror = function (e) {
             if (typeof (this.onerror) === 'function') {
@@ -37,6 +35,9 @@ class Webmo {
             }
             console.log('error!', e);
         }.bind(this);
+    }
+    close() {
+        this._ws.close();
     }
     getStatus() {
         var packed = JSON.stringify({ type: 'status' });
@@ -139,5 +140,5 @@ class Webmo {
         return this.getSpeedPerSecondByStep(this.degreeToStep(degree));
     }
 }
-exports.default = Webmo;
+exports.Webmo = Webmo;
 //# sourceMappingURL=ws.js.map
