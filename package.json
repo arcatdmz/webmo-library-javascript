@@ -27,8 +27,6 @@
   "author": "mactkg <mactkg@gmail.com> (http://makerbox.net/)",
   "license": "MIT",
   "dependencies": {
-    "eventemitter2": "^1.0.0",
-    "q": "^1.4.1",
     "qwest": "^4.1.0"
   },
   "devDependencies": {
