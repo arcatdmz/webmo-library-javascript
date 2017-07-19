@@ -1,15 +1,17 @@
-var qwest = require('qwest')
+import * as rp from 'request-promise-native';
 
-var Webmo = function Webmo (host) {
+class Webmo {
+  private base: string;
+  private _stepAngle: number;
+
+constructor(host) {
   this.base = '//' + (host || 'webmo.local')
   this.base += '/api'
-  qwest.base = this.base
-
   this._stepAngle = 1.8
 }
 
-Webmo.prototype.getStatus = function getStatus () {
-  return qwest.get('/status')
+public getStatus () {
+  return rp(this.base + '/status');
 }
 
 /**
@@ -19,19 +21,18 @@ Webmo.prototype.getStatus = function getStatus () {
  * @param {number} [speed] - 回転速度を指定．(度/秒)
  * @returns {Promise}
  */
-Webmo.prototype.rotate = function rotate (speed) {
-  return qwest.post('/rotate/forever', {speed: speed})
+public rotate (speed) {
+  return rp({ method: 'post', url: this.base + '/rotate/forever', body: {speed: speed} })
 }
 
-Webmo.prototype.rotateTo = function rotateTo (position, absRange, speed) {
+public rotateTo (position, absRange, speed) {
   var args = {
     degree: position,
     absRange: absRange,
     speed: speed,
     absolute: true
   }
-
-  return qwest.post('/rotate', args)
+  return rp({ method: 'post', url: this.base + '/rotate', body: args })
 }
 
 /**
@@ -45,18 +46,18 @@ Webmo.prototype.rotateTo = function rotateTo (position, absRange, speed) {
  * @param {number} [speed] - 回転速度を指定．(度/秒)
  * @returns {Promise}
  */
-Webmo.prototype.rotateBy = function rotateBy (degree, speed) {
+public rotateBy (degree, speed) {
   var args = {
     degree: degree,
     speed: speed
   }
 
-  return qwest.post('/rotate', args)
+  return rp({ method: 'post', url: this.base + '/rotate', body: args })
 }
 
 // XXX: Later
-Webmo.prototype.rotateToHome = function rotateToHome () {
-  return qwest.post('/rotate/home', {})
+public rotateToHome () {
+  return rp({ method: 'post', url: this.base + '/rotate/home', body: {} })
 }
 
 /**
@@ -66,10 +67,10 @@ Webmo.prototype.rotateToHome = function rotateToHome () {
  * @param {boolean} [lock] - 停止後モーターを固定して動かないようにする．
  * @returns {Promise}
  */
-Webmo.prototype.stop = function stop (smooth, lock) {
+public stop (smooth, lock) {
   smooth = smooth || false
   lock = lock || false
-  return qwest.post('/stop', {smooth: smooth, lock: lock})
+  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: smooth, lock: lock} })
 }
 
 /**
@@ -78,8 +79,8 @@ Webmo.prototype.stop = function stop (smooth, lock) {
  *
  * @returns {Promise}
  */
-Webmo.prototype.stopHard = function stopHard () {
-  return qwest.post('/stop', {smooth: false})
+public stopHard () {
+  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: false} })
 }
 
 /**
@@ -88,33 +89,13 @@ Webmo.prototype.stopHard = function stopHard () {
  *
  * @returns {Promise}
  */
-Webmo.prototype.stopSoft = function stopSoft () {
-  return qwest.post('/stop', {smooth: true})
-}
-
-/**
- * Webmoを急停止させる．
- * 停止後モーターを固定して動かないようにする．
- *
- * @returns {Promise}
- */
-Webmo.prototype.lockHard = function () {
-  return qwest.post('/stop', {smooth: false})
-}
-
-/**
- * Webmoをなめらかに停止させる．
- * 停止後モーターを固定して動かないようにする．
- *
- * @returns {Promise}
- */
-Webmo.prototype.lockSoft = function () {
-  return qwest.post('/stop', {smooth: true})
+public stopSoft () {
+  return rp({ method: 'post', url: this.base + '/stop', body: {smooth: true} })
 }
 
 // XXX: Later
-Webmo.prototype.resetHome = function resetHome () {
-  return qwest.post('/home/reset', {})
+public resetHome () {
+  return rp({ method: 'post', url: this.base + '/home/reset', body: {} })
 }
 
 /**
@@ -123,7 +104,7 @@ Webmo.prototype.resetHome = function resetHome () {
  * @param {Number} [angle] - 度
  * @returns {Number} - ステップ
  */
-Webmo.prototype.angleToStep = function angleToStep (angle) {
+public angleToStep (angle) {
   return angle / this._stepAngle
 }
 
@@ -133,19 +114,20 @@ Webmo.prototype.angleToStep = function angleToStep (angle) {
  * @param {Number} [step] - ステップ
  * @returns {Number} - 度
  */
-Webmo.prototype.stepToAngle = function stepToAngle (step) {
+public stepToAngle (step) {
   return step * this._stepAngle / 128 // XXX: microstep must be supplied
 }
 
 
 // XXX: Later
-Webmo.prototype.getSpeedPerSecondByStep = function getSpeedPerSecondByStep (step) {
+public getSpeedPerSecondByStep (step) {
   return Math.pow(2, 28) * step / Math.pow(10, 9) * 250
 }
 
 // XXX: Later
-Webmo.prototype.getSpeedPerSecondByAngle = function getSpeedPerSecondByAngle (angle) {
+public getSpeedPerSecondByAngle (angle) {
   return this.getSpeedPerSecondByStep(this.angleToStep(angle))
 }
+}
 
-module.exports = Webmo
+export default Webmo;

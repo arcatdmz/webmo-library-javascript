@@ -1,36 +1,45 @@
 {
-  "name": "webmo-client",
-  "version": "0.1.1",
-  "description": "A javascript library for webmo",
-  "keywords": ["Webmo", "WoT", "IoT","Cidre", "CidreIxD"],
-  "homepage": "https://github.com/cidreixd/webmo-library-javascript",
+  "name": "webmo-client-nodejs",
+  "version": "0.2.0",
+  "description": "A Node.js library for Webmo",
+  "keywords": [
+    "Webmo",
+    "WoT",
+    "IoT",
+    "Cidre",
+    "CidreIxD"
+  ],
+  "homepage": "https://github.com/arcatdmz/webmo-library-nodejs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cidreixd/webmo-library-javascript.git"
+    "url": "https://github.com/arcatdmz/webmo-library-nodejs.git"
   },
   "bugs": {
-    "url": "https://github.com/cidreixd/webmo-library-javascript/issues"
+    "url": "https://github.com/arcatdmz/webmo-library-nodejs/issues"
   },
-  "main": "index.js",
-  "browser": "dist/webmo.js",
+  "main": "dist/index.js",
   "scripts": {
-    "watch": "webpack --watch",
-    "build": "webpack && MINIFY=1 webpack"
+    "build": "tsc"
   },
   "files": [
     "README.md",
     "LICENSE",
     "dist",
     "lib",
-    "index.js"
+    "index.ts",
+    "tsconfig.json"
   ],
-  "author": "mactkg <mactkg@gmail.com> (http://makerbox.net/)",
+  "author": "mactkg <mactkg@gmail.com> (http://makerbox.net/) and arcatdmz <i@junkato.jp> (https://junkato.jp/)",
   "license": "MIT",
   "dependencies": {
-    "qwest": "^4.1.0"
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4",
+    "websocket": "^1.0.24"
   },
   "devDependencies": {
-    "uglify-loader": "^1.2.0",
-    "webpack": "^1.12.2"
+    "@types/node": "^7.0.38",
+    "@types/request": "^2.0.0",
+    "@types/request-promise-native": "^1.0.6",
+    "typescript": "^2.4.1"
   }
 }

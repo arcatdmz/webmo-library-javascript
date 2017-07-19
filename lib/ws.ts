@@ -1,8 +1,17 @@
-/* global WebSocket */
-var WebSocket = require('websocket').w3cwebsocket;
-var EventEmitter = require('events').EventEmitter;
+import { EventEmitter } from 'events';
+import websocket = require('websocket');
+// Promise is implemented in Node.js starting from v0.12.x
 
-var Webmo = function Webmo (host) {
+const WebSocket = websocket.w3cwebsocket;
+
+class Webmo {
+  private host: string;
+  private stepDegree: number;
+  private onmessage: Function;
+  private _ws: any;
+  private _ev: EventEmitter;
+
+constructor(host) {
   host = host || 'webmo.local'
 
   this.host = host
@@ -43,7 +52,7 @@ var Webmo = function Webmo (host) {
   }.bind(this)
 }
 
-Webmo.prototype.getStatus = function getStatus () {
+public getStatus () {
   var packed = JSON.stringify({type: 'status'})
   this._ws.send(packed)
 }
@@ -51,7 +60,7 @@ Webmo.prototype.getStatus = function getStatus () {
 //
 // rotate
 //
-Webmo.prototype.rotate = function rotate (speed, option) {
+public rotate (speed, option) {
   if (typeof speed === 'object') {
     option = speed
     speed = undefined
@@ -61,7 +70,7 @@ Webmo.prototype.rotate = function rotate (speed, option) {
   this._ws.send(packed)
 }
 
-Webmo.prototype.rotateTo = function rotateTo (target, absRange, speed) {
+public rotateTo (target, absRange, speed) {
   var packed = JSON.stringify({type: 'rotateTo', target: target, absRange: absRange, speed: speed})
   this._ws.send(packed)
 
@@ -75,7 +84,7 @@ Webmo.prototype.rotateTo = function rotateTo (target, absRange, speed) {
   }.bind(this))
 }
 
-Webmo.prototype.rotateBy = function rotateBy (diff, speed) {
+public rotateBy (diff, speed) {
   var packed = JSON.stringify({type: 'rotateBy', diff: diff, speed: speed})
   this._ws.send(packed)
 
@@ -89,22 +98,22 @@ Webmo.prototype.rotateBy = function rotateBy (diff, speed) {
   }.bind(this))
 }
 
-Webmo.prototype.rotateToHome = function rotateToHome () {
+public rotateToHome () {
   console.log('not impl')
 }
 
 //
 // Stop
 //
-Webmo.prototype.stopHard = function stopHard () {
+public stopHard () {
   return this.stop(true, false)
 }
 
-Webmo.prototype.stopSoft = function stopSoft () {
+public stopSoft () {
   return this.stop(false, false)
 }
 
-Webmo.prototype.stop = function stop (smooth, lock) {
+public stop (smooth, lock) {
   var packed = JSON.stringify({type: 'stop', smooth: smooth, lock: lock})
   this._ws.send(packed)
 
@@ -120,12 +129,12 @@ Webmo.prototype.stop = function stop (smooth, lock) {
 //
 // lock
 //
-Webmo.prototype.lock = function lock (smooth) {
+public lock (smooth) {
   var packed = JSON.stringify({type: 'lock', smooth: smooth})
   this._ws.send(packed)
 }
 
-Webmo.prototype.unlock = function unlock () {
+public unlock () {
   var packed = JSON.stringify({type: 'unlock'})
   this._ws.send(packed)
 }
@@ -133,7 +142,7 @@ Webmo.prototype.unlock = function unlock () {
 //
 // goodies
 //
-Webmo.prototype.tick = function tick (timeMs) {
+public tick (timeMs) {
   var packed = JSON.stringify({type: 'tick', timeMs: timeMs})
   this._ws.send(packed)
 }
@@ -141,25 +150,26 @@ Webmo.prototype.tick = function tick (timeMs) {
 //
 // Home
 //
-Webmo.prototype.resetHome = function resetHome () {
+public resetHome () {
   console.log('not impl')
 }
 
 // helper function
-Webmo.prototype.degreeToStep = function degreeToStep (degree) {
+public degreeToStep (degree) {
   return degree / this.stepDegree
 }
 
-Webmo.prototype.stepToDegree = function stepToDegree (step) {
+public stepToDegree (step) {
   return step * this.stepDegree / 128 // XXX: microstep must be supplied
 }
 
-Webmo.prototype.getSpeedPerSecondByStep = function getSpeedPerSecondByStep (step) {
+public getSpeedPerSecondByStep (step) {
   return Math.pow(2, 28) * step / Math.pow(10, 9) * 250
 }
 
-Webmo.prototype.getSpeedPerSecondByDegree = function getSpeedPerSecondByDegree (degree) {
+public getSpeedPerSecondByDegree (degree) {
   return this.getSpeedPerSecondByStep(this.degreeToStep(degree))
 }
+}
 
-module.exports = Webmo
+export default Webmo;
