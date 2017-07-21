@@ -11,30 +11,30 @@ class Webmo {
         this.onmessage = null;
         this._ws = new WebSocket('ws://' + host + ':8080/');
         this._ev = new events_1.EventEmitter();
-        this._ws.onopen = function (e) {
+        this._ws.onopen = (e) => {
             if (typeof (this.onopen) === 'function') {
                 this.onopen(e);
             }
             this._ev.emit('open');
-        }.bind(this);
-        this._ws.onmessage = function (e) {
+        };
+        this._ws.onmessage = (e) => {
             var json = JSON.parse(e.data);
             if (typeof (this.onmessage) === 'function') {
                 this.onmessage(json);
             }
             this._ev.emit(json.type, json);
-        }.bind(this);
-        this._ws.onclose = function (e) {
+        };
+        this._ws.onclose = (e) => {
             if (typeof (this.onclose) === 'function') {
                 this.onclose();
             }
-        }.bind(this);
-        this._ws.onerror = function (e) {
+        };
+        this._ws.onerror = (e) => {
             if (typeof (this.onerror) === 'function') {
                 this.onerror();
             }
             console.log('error!', e);
-        }.bind(this);
+        };
     }
     close() {
         this._ws.close();
@@ -58,25 +58,25 @@ class Webmo {
         var packed = JSON.stringify({ type: 'rotateTo', target: target, absRange: absRange, speed: speed });
         this._ws.send(packed);
         // XXX: reject
-        return new Promise(function (resolve, reject) {
-            this._ev.on('notice', function (data) {
+        return new Promise((resolve, reject) => {
+            this._ev.once('notice', function (data) {
                 if (data.msg === 'done' && data.func === 'rotateTo') {
                     resolve(data);
                 }
             });
-        }.bind(this));
+        });
     }
     rotateBy(diff, speed) {
         var packed = JSON.stringify({ type: 'rotateBy', diff: diff, speed: speed });
         this._ws.send(packed);
         // XXX: reject
-        return new Promise(function (resolve, reject) {
-            this._ev.on('notice', function (data) {
+        return new Promise((resolve, reject) => {
+            this._ev.once('notice', function (data) {
                 if (data.msg === 'done' && data.func === 'rotateBy') {
                     resolve(data);
                 }
             });
-        }.bind(this));
+        });
     }
     rotateToHome() {
         console.log('not impl');
@@ -94,13 +94,13 @@ class Webmo {
         var packed = JSON.stringify({ type: 'stop', smooth: smooth, lock: lock });
         this._ws.send(packed);
         // XXX: reject
-        return new Promise(function (resolve, reject) {
-            this._ev.on('notice', function (data) {
+        return new Promise((resolve, reject) => {
+            this._ev.once('notice', function (data) {
                 if (data.msg === 'done' && data.func === 'stop') {
                     resolve(data);
                 }
             });
-        }.bind(this));
+        });
     }
     //
     // lock
