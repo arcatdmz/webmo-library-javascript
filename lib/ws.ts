@@ -7,7 +7,10 @@ const WebSocket = websocket.w3cwebsocket;
 export class Webmo {
   private host: string;
   private stepDegree: number;
-  private onmessage: Function;
+  public onmessage: Function;
+  public onopen: Function;
+  public onclose: Function;
+  public onerror: Function;
   private _ws: any;
   private _ev: EventEmitter;
 
@@ -20,34 +23,34 @@ constructor(host) {
   this._ws = new WebSocket('ws://' + host + ':8080/')
   this._ev = new EventEmitter()
 
-  this._ws.onopen = function (e) {
+  this._ws.onopen = (e) => {
     if (typeof (this.onopen) === 'function') {
       this.onopen(e)
     }
     this._ev.emit('open')
-  }.bind(this)
+  }
 
-  this._ws.onmessage = function (e) {
+  this._ws.onmessage = (e) => {
     var json = JSON.parse(e.data)
 
     if (typeof (this.onmessage) === 'function') {
       this.onmessage(json)
     }
     this._ev.emit(json.type, json)
-  }.bind(this)
+  }
 
-  this._ws.onclose = function (e) {
+  this._ws.onclose = (e) => {
     if (typeof (this.onclose) === 'function') {
       this.onclose()
     }
-  }.bind(this)
+  }
 
-  this._ws.onerror = function (e) {
+  this._ws.onerror = (e) => {
     if (typeof (this.onerror) === 'function') {
       this.onerror()
     }
     console.log('error!', e)
-  }.bind(this)
+  }
 }
 
 public close () {
@@ -77,13 +80,13 @@ public rotateTo (target, absRange, speed) {
   this._ws.send(packed)
 
   // XXX: reject
-  return new Promise(function (resolve, reject) {
-    this._ev.on('notice', function (data) {
+  return new Promise((resolve, reject) => {
+    this._ev.once('notice', function (data) {
       if (data.msg === 'done' && data.func === 'rotateTo') {
         resolve(data)
       }
     })
-  }.bind(this))
+  })
 }
 
 public rotateBy (diff, speed) {
@@ -91,13 +94,13 @@ public rotateBy (diff, speed) {
   this._ws.send(packed)
 
   // XXX: reject
-  return new Promise(function (resolve, reject) {
-    this._ev.on('notice', function (data) {
+  return new Promise((resolve, reject) => {
+    this._ev.once('notice', function (data) {
       if (data.msg === 'done' && data.func === 'rotateBy') {
         resolve(data)
       }
     })
-  }.bind(this))
+  })
 }
 
 public rotateToHome () {
@@ -120,13 +123,13 @@ public stop (smooth, lock) {
   this._ws.send(packed)
 
   // XXX: reject
-  return new Promise(function (resolve, reject) {
-    this._ev.on('notice', function (data) {
+  return new Promise((resolve, reject) => {
+    this._ev.once('notice', function (data) {
       if (data.msg === 'done' && data.func === 'stop') {
         resolve(data)
       }
     })
-  }.bind(this))
+  });
 }
 //
 // lock
